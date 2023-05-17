@@ -1,0 +1,5474 @@
+library(raster)
+library(rgdal)
+library(ggplot2)
+library(zoo)
+
+### ANaLISIS TEMPORAL
+## todo el año
+#NDVI
+############# grafico de caja y bigote anual #############
+#########  NDVI
+setwd("e:/Documents/PROYECTOS/L_SAVI/NDVI_EVI/promedio_anual/")
+list.anual <- list.files("NDVI/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(list.anual)
+nlayers(ndvi)
+plot(ndvi,18)
+
+x11()
+boxplot(ndvi)
+boxplot(ndvi, xaxt = "n", outline = F, main = "Annual variation of NDVI", xlab="years", ylab="NDVI")
+axis(1, at = 1:23, labels = 2000:2022)
+
+
+########## EVI
+setwd("e:/Documents/PROYECTOS/L_SAVI/NDVI_EVI/promedio_anual/")
+list.anual <- list.files("EVI/",pattern = "*.tif$",full.names = TRUE)
+evi <- stack(list.anual)
+nlayers(evi)
+plot(evi,18)
+
+x11()
+boxplot(evi)
+boxplot(evi, xaxt = "n", outline = F, main = "Annual variation of EVI", xlab="years", ylab="EVI")
+axis(1, at = 1:23, labels = 2000:2022)
+
+## por temporada
+############# grafico de caja y bigote anual secas: dic a mayo #############
+#########  NDVI
+setwd("e:/Documents/PROYECTOS/L_SAVI/NDVI_EVI/promedio_secas/")
+list.anual <- list.files("NDVI/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(list.anual)
+nlayers(ndvi)
+plot(ndvi,18)
+
+x11()
+boxplot(ndvi)
+boxplot(ndvi, xaxt = "n", outline = F, main = "Seasonality variation (dry season) of NDVI", xlab="years", ylab="NDVI")
+axis(1, at = 1:22, labels = 2001:2022)
+
+
+########## EVI
+setwd("e:/Documents/PROYECTOS/L_SAVI/NDVI_EVI/promedio_secas/")
+list.anual <- list.files("EVI/",pattern = "*.tif$",full.names = TRUE)
+evi <- stack(list.anual)
+nlayers(evi)
+plot(evi,18)
+
+x11()
+boxplot(evi)
+boxplot(evi, xaxt = "n", outline = F, main = "Seasonality variation (dry season) of EVI", xlab="years", ylab="EVI")
+axis(1, at = 1:22, labels = 2001:2022)
+
+
+############# grafico de caja y bigote anual lluvias (junio-nov) #############
+#########  NDVI
+setwd("e:/Documents/PROYECTOS/L_SAVI/NDVI_EVI/promedio_lluvias/")
+list.anual <- list.files("NDVI/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(list.anual)
+nlayers(ndvi)
+plot(ndvi,18)
+
+x11()
+boxplot(ndvi)
+boxplot(ndvi, xaxt = "n", outline = F, main = "Seasonality variation (rainy season) of NDVI", xlab="years", ylab="NDVI")
+axis(1, at = 1:23, labels = 2000:2022)
+
+
+########## EVI
+setwd("e:/Documents/PROYECTOS/L_SAVI/NDVI_EVI/promedio_lluvias/")
+list.anual <- list.files("EVI/",pattern = "*.tif$",full.names = TRUE)
+evi <- stack(list.anual)
+nlayers(evi)
+plot(evi,18)
+
+x11()
+boxplot(evi)
+boxplot(evi, xaxt = "n", outline = F, main = "Seasonality variation (rainy season) of EVI", xlab="years", ylab="EVI")
+axis(1, at = 1:23, labels = 2000:2022)
+
+
+
+#### EXTRACCIoN DE VALORES PROMEDIOS PARA TODAS LAS IMaGENES DE NDVI EN TODOS LOS AÑOS ######
+############  2000, NOOOO HAY DATOS
+############  2001
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+head(bd2)
+
+#extaemos los valores promedios de todas las imagenes del 2001
+ene1 <- mean(bd2$ndvi_20010101_t)
+ene2 <- mean(bd2$ndvi_20010117_t)
+
+enero <- rbind(ene1,ene2)
+fechas <- rbind("ene.2001","ene.2001")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20010202_t)
+feb2 <- mean(bd2$ndvi_20010218_t)
+
+febero <- rbind(feb1,feb2)
+fechas <- rbind("feb.2001","feb.2001")
+febero <- cbind(febero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+mar1 <- mean(bd2$ndvi_20010306_t)
+mar2 <- mean(bd2$ndvi_20010322_t)
+
+marzo <- rbind(mar1,mar2)
+fechas <- rbind("mar.2001","mar.2001")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20010407_t)
+abr2 <- mean(bd2$ndvi_20010423_t)
+
+abril <- rbind(abr1,abr2)
+fechas <- rbind("abr.2001","abr.2001")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20010509_t)
+may2 <- mean(bd2$ndvi_20010525_t)
+
+mayo <- rbind(may1,may2)
+fechas <- rbind("may.2001","may.2001")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20010610_t)
+jun2 <- mean(bd2$ndvi_20010626_t)
+
+junio <- rbind(jun1,jun2)
+fechas <- rbind("jun.2001","jun.2001")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20010712_t)
+jul2 <- mean(bd2$ndvi_20010728_t)
+
+julio <- rbind(jul1,jul2)
+fechas <- rbind("jul.2001","jul.2001")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20010813_t)
+ago2 <- mean(bd2$ndvi_20010829_t)
+
+agosto <- rbind(ago1,ago2)
+fechas <- rbind("ago.2001","ago.2001")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20010914_t)
+sep2 <- mean(bd2$ndvi_20010930_t)
+
+septiembre <- c(sep1,sep2)
+fechas <- rbind("sep.2001","sep.2001")
+septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+octubre <- mean(bd2$ndvi_20011016_t)
+
+fechas <- rbind("oct.2001")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20011101_t)
+nov2 <- mean(bd2$ndvi_20011117_t)
+
+noviembre <- c(nov1,nov2)
+fechas <- rbind("nov.2001","nov.2001")
+noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20011203_t)
+dic2 <- mean(bd2$ndvi_20011219_t)
+
+diciembre <- c(dic1,dic2)
+fechas <- rbind("dic.2001","dic.2001")
+diciembre <- cbind(diciembre,fechas)
+
+##################################################  2002
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+head(bd2)
+
+#extaemos los valores promedios de todas las imagenes del 2005
+ene1 <- mean(bd2$ndvi_20020101_t)
+ene2 <- mean(bd2$ndvi_20020117_t)
+
+enero <- rbind(ene1,ene2)
+fechas <- rbind("ene.2002","ene.2002")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20020202_t)
+feb2 <- mean(bd2$ndvi_20020218_t)
+
+febero <- rbind(feb1,feb2)
+fechas <- rbind("feb.2002","feb.2002")
+febero <- cbind(febero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20020306_t)
+mar2 <- mean(bd2$ndvi_20020322_t)
+
+marzo <- rbind(mar1,mar2)
+fechas <- rbind("mar.2002","mar.2002")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20020407_t)
+abr2 <- mean(bd2$ndvi_20020423_t)
+
+abril <- rbind(abr1,abr2)
+fechas <- rbind("abr.2002","abr.2002")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20020509_t)
+may2 <- mean(bd2$ndvi_20020525_t)
+
+mayo <- rbind(may1,may2)
+fechas <- rbind("may.2002","may.2002")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20020610_t)
+jun2 <- mean(bd2$ndvi_20020626_t)
+
+junio <- rbind(jun1,jun2)
+fechas <- rbind("jun.2002","jun.2002")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20020712_t)
+jul2 <- mean(bd2$ndvi_20020728_t)
+
+julio <- rbind(jul1,jul2)
+fechas <- rbind("jul.2002","jul.2002")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20020805_a)
+ago2 <- mean(bd2$ndvi_20020813_t)
+ago3 <- mean(bd2$ndvi_20020821_a)
+ago4 <- mean(bd2$ndvi_20020829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2002","ago.2002","ago.2002","ago.2002")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20020906_a)
+sep2 <- mean(bd2$ndvi_20020914_t)
+sep3 <- mean(bd2$ndvi_20020922_a)
+sep4 <- mean(bd2$ndvi_20020930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2002","sep.2002","sep.2002","sep.2002")
+septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20021008_a)
+oct2 <- mean(bd2$ndvi_20021016_t)
+oct3 <- mean(bd2$ndvi_20021024_a)
+#oct4 <- mean(bd2$ndvi_2002)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2002","oct.2002","oct.2002")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20021101_t)
+nov2 <- mean(bd2$ndvi_20021109_a)
+nov3 <- mean(bd2$ndvi_20021117_t)
+nov4 <- mean(bd2$ndvi_20021125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2002","nov.2002","nov.2002","nov.2002")
+noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20021203_t)
+dic2 <- mean(bd2$ndvi_20021211_a)
+dic3 <- mean(bd2$ndvi_20021219_t)
+dic4 <- mean(bd2$ndvi_20021227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2002","dic.2002","dic.2002","dic.2002")
+diciembre <- cbind(diciembre,fechas)
+
+################################################### 2003
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+#head(bd2)
+
+ene1 <- mean(bd2$ndvi_20030101_t)
+ene2 <- mean(bd2$ndvi_20030109_a)
+ene3 <- mean(bd2$ndvi_20030117_t)
+ene4 <- mean(bd2$ndvi_20030125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2003","ene.2003","ene.2003","ene.2003")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20030202_t)
+feb2 <- mean(bd2$ndvi_20030210_a)
+feb3 <- mean(bd2$ndvi_20030218_t)
+feb4 <- mean(bd2$ndvi_20030226_a)
+
+febero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2003","feb.2003","feb.2003","feb.2003")
+febero <- cbind(febero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+mar1 <- mean(bd2$ndvi_20030306_t)
+mar2 <- mean(bd2$ndvi_20030314_a)
+mar3 <- mean(bd2$ndvi_20030322_t)
+mar4 <- mean(bd2$ndvi_20030330_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2003","mar.2003","mar.2003","mar.2003")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20030407_t)
+abr2 <- mean(bd2$ndvi_20030415_a)
+abr3 <- mean(bd2$ndvi_20030423_t)
+
+abril <- rbind(abr1,abr2,abr3)
+fechas <- rbind("abr.2003","abr.2003","abr.2003")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20030501_a)
+may2 <- mean(bd2$ndvi_20030509_t)
+may3 <- mean(bd2$ndvi_20030517_a)
+may4 <- mean(bd2$ndvi_20030525_t)
+
+mayo <- rbind(may1,may2,may3,may4)
+fechas <- rbind("may.2003","may.2003","may.2003","may.2003")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+jun1 <- mean(bd2$ndvi_20030602_a)
+jun2 <- mean(bd2$ndvi_20030610_t)
+jun3 <- mean(bd2$ndvi_20030618_a)
+jun4 <- mean(bd2$ndvi_20030626_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2003","jun.2003","jun.2003","jun.2003")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20030704_a)
+jul2 <- mean(bd2$ndvi_20030712_t)
+jul3 <- mean(bd2$ndvi_20030720_a)
+jul4 <- mean(bd2$ndvi_20030728_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2003","jul.2003","jul.2003","jul.2003")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20030805_a)
+ago2 <- mean(bd2$ndvi_20030813_t)
+ago3 <- mean(bd2$ndvi_20030821_a)
+ago4 <- mean(bd2$ndvi_20030829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2003","ago.2003","ago.2003","ago.2003")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20030906_a)
+sep2 <- mean(bd2$ndvi_20030914_t)
+sep3 <- mean(bd2$ndvi_20030922_a)
+sep4 <- mean(bd2$ndvi_20030930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2003","sep.2003","sep.2003","sep.2003")
+septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20031008_a)
+oct2 <- mean(bd2$ndvi_20031016_t)
+oct3 <- mean(bd2$ndvi_20031024_a)
+#oct4 <- mean(bd2$ndvi_200510)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2003","oct.2003","oct.2003")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+nov1 <- mean(bd2$ndvi_20031101_t)
+nov2 <- mean(bd2$ndvi_20031109_a)
+nov3 <- mean(bd2$ndvi_20031117_t)
+nov4 <- mean(bd2$ndvi_20031125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2003","nov.2003","nov.2003","nov.2003")
+ noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20031203_t)
+dic2 <- mean(bd2$ndvi_20031211_a)
+dic3 <- mean(bd2$ndvi_20031219_t)
+dic4 <- mean(bd2$ndvi_20031227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2003","dic.2003","dic.2003","dic.2003")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2003.csv", row.names = F)
+
+
+################################################### 2004
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+head(bd2)
+
+#extaemos los valores promedios de todas las imagenes del 2005
+ene1 <- mean(bd2$ndvi_20040101_t)
+ene2 <- mean(bd2$ndvi_20040109_a)
+ene3 <- mean(bd2$ndvi_20040117_t)
+ene4 <- mean(bd2$ndvi_20040125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2004","ene.2004","ene.2004","ene.2005")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20040202_t)
+feb2 <- mean(bd2$ndvi_20040210_a)
+feb3 <- mean(bd2$ndvi_20040218_t)
+feb4 <- mean(bd2$ndvi_20040226_a)
+
+febero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2004","feb.2004","feb.2004","feb.2004")
+febero <- cbind(febero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20040305_t)
+mar2 <- mean(bd2$ndvi_20040313_a)
+mar3 <- mean(bd2$ndvi_20040321_t)
+mar4 <- mean(bd2$ndvi_20040329_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2005","mar.2005","mar.2005","mar.2005")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20040406_t)
+abr2 <- mean(bd2$ndvi_20040414_a)
+abr3 <- mean(bd2$ndvi_20040422_t)
+abr4 <- mean(bd2$ndvi_20040430_a)
+
+abril <- rbind(abr1,abr2,abr3,abr4)
+fechas <- rbind("abr.2004","abr.2004","abr.2004", "abr.2004")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20040508_t)
+may2 <- mean(bd2$ndvi_20040516_a)
+may3 <- mean(bd2$ndvi_20040524_t)
+
+mayo <- rbind(may1,may2,may3)
+fechas <- rbind("may.2004","may.2004","may.2004")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20040601_a)
+jun2 <- mean(bd2$ndvi_20040609_t)
+jun3 <- mean(bd2$ndvi_20040617_a)
+jun4 <- mean(bd2$ndvi_20040625_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2004","jun.2004","jun.2004","jun.2004")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20040703_a)
+jul2 <- mean(bd2$ndvi_20040711_t)
+jul3 <- mean(bd2$ndvi_20040719_a)
+jul4 <- mean(bd2$ndvi_20040727_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2004","jul.2004","jul.2004","jul.2004")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20040804_a)
+ago2 <- mean(bd2$ndvi_20040812_t)
+ago3 <- mean(bd2$ndvi_20040820_a)
+ago4 <- mean(bd2$ndvi_20040828_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2004","ago.2004","ago.2004","ago.2004")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20040905_a)
+sep2 <- mean(bd2$ndvi_20040913_t)
+sep3 <- mean(bd2$ndvi_20040921_a)
+sep4 <- mean(bd2$ndvi_20040929_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2004","sep.2004","sep.2004","sep.2004")
+septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20041007_a)
+oct2 <- mean(bd2$ndvi_20041015_t)
+oct3 <- mean(bd2$ndvi_20041023_a)
+oct4 <- mean(bd2$ndvi_20041031_t)
+
+octubre <- c(oct1,oct2,oct3,oct4)
+fechas <- rbind("oct.2004","oct.2004","oct.2004","oct.2004")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20041108_a)
+nov2 <- mean(bd2$ndvi_20041116_t)
+nov3 <- mean(bd2$ndvi_20041124a)
+
+noviembre <- c(nov1,nov2,nov3)
+fechas <- rbind("nov.2004","nov.2004","nov.2004")
+noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20041202_t)
+dic2 <- mean(bd2$ndvi_20041210_a)
+dic3 <- mean(bd2$ndvi_20041218_t)
+dic4 <- mean(bd2$ndvi_20041226_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2004","dic.2004","dic.2004","dic.2004")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2004.csv", row.names = F)
+
+
+############################################## 2005
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+head(bd2)
+
+#extaemos los valores promedios de todas las imagenes del 2005
+ene1 <- mean(bd2$ndvi_20050101_t)
+ene2 <- mean(bd2$ndvi_20050109_a)
+ene3 <- mean(bd2$ndvi_20050117_t)
+ene4 <- mean(bd2$ndvi_20050125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2005","ene.2005","ene.2005","ene.2005")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+feb1 <- mean(bd2$ndvi_20050202_t)
+feb2 <- mean(bd2$ndvi_20050210_a)
+feb3 <- mean(bd2$ndvi_20050218_t)
+feb4 <- mean(bd2$ndvi_20050226_a)
+
+febero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2005","feb.2005","feb.2005","feb.2005")
+febero <- cbind(febero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+mar1 <- mean(bd2$ndvi_20050306_t)
+mar2 <- mean(bd2$ndvi_20050314_a)
+mar3 <- mean(bd2$ndvi_20050322_t)
+mar4 <- mean(bd2$ndvi_20050330_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2005","mar.2005","mar.2005","mar.2005")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+abr1 <- mean(bd2$ndvi_20050407_t)
+abr2 <- mean(bd2$ndvi_20050415_a)
+abr3 <- mean(bd2$ndvi_20050423_t)
+
+abril <- rbind(abr1,abr2,abr3)
+fechas <- rbind("abr.2005","abr.2005","abr.2005")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+may1 <- mean(bd2$ndvi_20050501_a)
+may2 <- mean(bd2$ndvi_20050509_t)
+may3 <- mean(bd2$ndvi_20050517_a)
+may4 <- mean(bd2$ndvi_20050525_t)
+
+mayo <- rbind(may1,may2,may3,may4)
+fechas <- rbind("may.2005","may.2005","may.2005","may.2005")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+jun1 <- mean(bd2$ndvi_20050602_a)
+jun2 <- mean(bd2$ndvi_20050610_t)
+jun3 <- mean(bd2$ndvi_20050618_a)
+jun4 <- mean(bd2$ndvi_20050626_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2005","jun.2005","jun.2005","jun.2005")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+jul1 <- mean(bd2$ndvi_20050704_a)
+jul2 <- mean(bd2$ndvi_20050712_t)
+jul3 <- mean(bd2$ndvi_20050720_a)
+jul4 <- mean(bd2$ndvi_20050728_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2005","jul.2005","jul.2005","jul.2005")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+ago1 <- mean(bd2$ndvi_20050805_a)
+ago2 <- mean(bd2$ndvi_20050813_t)
+ago3 <- mean(bd2$ndvi_20050821_a)
+ago4 <- mean(bd2$ndvi_20050829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2005","ago.2005","ago.2005","ago.2005")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+sep1 <- mean(bd2$ndvi_20050906_a)
+sep2 <- mean(bd2$ndvi_20050914_t)
+sep3 <- mean(bd2$ndvi_20050922_a)
+sep4 <- mean(bd2$ndvi_20050930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2005","sep.2005","sep.2005","sep.2005")
+ septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+oct1 <- mean(bd2$ndvi_20051008_a)
+oct2 <- mean(bd2$ndvi_20051016_t)
+oct3 <- mean(bd2$ndvi_20051024_a)
+#oct4 <- mean(bd2$ndvi_200510)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2005","oct.2005","oct.2005")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+nov1 <- mean(bd2$ndvi_20051101_t)
+nov2 <- mean(bd2$ndvi_20051109_a)
+nov3 <- mean(bd2$ndvi_20051117_t)
+nov4 <- mean(bd2$ndvi_20051125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2005","nov.2005","nov.2005","nov.2005")
+ noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+dic1 <- mean(bd2$ndvi_20051203_t)
+dic2 <- mean(bd2$ndvi_20051211_a)
+dic3 <- mean(bd2$ndvi_20051219_t)
+dic4 <- mean(bd2$ndvi_20051227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2005","dic.2005","dic.2005","dic.2005")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2005.csv", row.names = F)
+
+############################################### 2006
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2005
+ene1 <- mean(bd2$ndvi_20060101_t)
+ene2 <- mean(bd2$ndvi_20060109_a)
+ene3 <- mean(bd2$ndvi_20060117_t)
+ene4 <- mean(bd2$ndvi_20060125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2006","ene.2006","ene.2006","ene.2006")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20060202_t)
+feb2 <- mean(bd2$ndvi_20060210_a)
+feb3 <- mean(bd2$ndvi_20060218_t)
+feb4 <- mean(bd2$ndvi_20060226_a)
+
+febero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2006","feb.2006","feb.2006","feb.2006")
+febero <- cbind(febero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20060306_t)
+mar2 <- mean(bd2$ndvi_20060314_a)
+mar3 <- mean(bd2$ndvi_20060322_t)
+mar4 <- mean(bd2$ndvi_20060330_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2006","mar.2006","mar.2006","mar.2006")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20060407_t)
+abr2 <- mean(bd2$ndvi_20060415_a)
+abr3 <- mean(bd2$ndvi_20060423_t)
+
+abril <- rbind(abr1,abr2,abr3)
+fechas <- rbind("abr.2006","abr.2006","abr.2006")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+may1 <- mean(bd2$ndvi_20060501_a)
+may2 <- mean(bd2$ndvi_20060509_t)
+may3 <- mean(bd2$ndvi_20060517_a)
+may4 <- mean(bd2$ndvi_20060525_t)
+
+mayo <- rbind(may1,may2,may3,may4)
+fechas <- rbind("may.2006","may.2006","may.2006","may.2006")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20060602_a)
+jun2 <- mean(bd2$ndvi_20060610_t)
+jun3 <- mean(bd2$ndvi_20060618_a)
+jun4 <- mean(bd2$ndvi_20060626_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2006","jun.2006","jun.2006","jun.2006")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20060704_a)
+jul2 <- mean(bd2$ndvi_20060712_t)
+jul3 <- mean(bd2$ndvi_20060720_a)
+jul4 <- mean(bd2$ndvi_20060728_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2006","jul.2006","jul.2006","jul.2006")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20060805_a)
+ago2 <- mean(bd2$ndvi_20060813_t)
+ago3 <- mean(bd2$ndvi_20060821_a)
+ago4 <- mean(bd2$ndvi_20060829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2006","ago.2006","ago.2006","ago.2006")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20060906_a)
+sep2 <- mean(bd2$ndvi_20060914_t)
+sep3 <- mean(bd2$ndvi_20060922_a)
+sep4 <- mean(bd2$ndvi_20060930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2006","sep.2006","sep.2006","sep.2006")
+ septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20061008_a)
+oct2 <- mean(bd2$ndvi_20061016_t)
+oct3 <- mean(bd2$ndvi_20061024_a)
+#oct4 <- mean(bd2$ndvi_200510)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2006","oct.2006","oct.2006")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20061101_t)
+nov2 <- mean(bd2$ndvi_20061109_a)
+nov3 <- mean(bd2$ndvi_20061117_t)
+nov4 <- mean(bd2$ndvi_20061125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2006","nov.2006","nov.2006","nov.2006")
+ noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+dic1 <- mean(bd2$ndvi_20061203_t)
+dic2 <- mean(bd2$ndvi_20061211_a)
+dic3 <- mean(bd2$ndvi_20061219_t)
+dic4 <- mean(bd2$ndvi_20061227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2006","dic.2006","dic.2006","dic.2006")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+colnames(todo) <- c("ndvi","fechas")
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2006.csv", row.names = F)
+
+############################################### 2007
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+head(bd2)
+
+#extaemos los valores promedios de todas las imagenes del 2005
+ene1 <- mean(bd2$ndvi_20070101_t)
+ene2 <- mean(bd2$ndvi_20070109_a)
+ene3 <- mean(bd2$ndvi_20070117_t)
+ene4 <- mean(bd2$ndvi_20070125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2007","ene.2007","ene.2007","ene.2007")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20070202_t)
+feb2 <- mean(bd2$ndvi_20070210_a)
+feb3 <- mean(bd2$ndvi_20070218_t)
+feb4 <- mean(bd2$ndvi_20070226_a)
+
+febero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2007","feb.2007","feb.2007","feb.2007")
+febero <- cbind(febero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20070306_t)
+mar2 <- mean(bd2$ndvi_20070314_a)
+mar3 <- mean(bd2$ndvi_20070322_t)
+mar4 <- mean(bd2$ndvi_20070330_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2007","mar.2007","mar.2007","mar.2007")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20070407_t)
+abr2 <- mean(bd2$ndvi_20070415_a)
+abr3 <- mean(bd2$ndvi_20070423_t)
+
+abril <- rbind(abr1,abr2,abr3)
+fechas <- rbind("abr.2007","abr.2007","abr.2007")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20070501_a)
+may2 <- mean(bd2$ndvi_20070509_t)
+may3 <- mean(bd2$ndvi_20070517_a)
+may4 <- mean(bd2$ndvi_20070525_t)
+
+mayo <- rbind(may1,may2,may3,may4)
+fechas <- rbind("may.2007","may.2007","may.2007","may.2007")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20070602_a)
+jun2 <- mean(bd2$ndvi_20070610_t)
+jun3 <- mean(bd2$ndvi_20070618_a)
+jun4 <- mean(bd2$ndvi_20070626_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2007","jun.2007","jun.2007","jun.2007")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20070704_a)
+jul2 <- mean(bd2$ndvi_20070712_t)
+jul3 <- mean(bd2$ndvi_20070720_a)
+jul4 <- mean(bd2$ndvi_20070728_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2007","jul.2007","jul.2007","jul.2007")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20070805_a)
+ago2 <- mean(bd2$ndvi_20070813_t)
+ago3 <- mean(bd2$ndvi_20070821_a)
+ago4 <- mean(bd2$ndvi_20070829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2007","ago.2007","ago.2007","ago.2007")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20070906_a)
+sep2 <- mean(bd2$ndvi_20070914_t)
+sep3 <- mean(bd2$ndvi_20070922_a)
+sep4 <- mean(bd2$ndvi_20070930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2007","sep.2007","sep.2007","sep.2007")
+ septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20071008_a)
+oct2 <- mean(bd2$ndvi_20071016_t)
+oct3 <- mean(bd2$ndvi_20071024_a)
+#oct4 <- mean(bd2$ndvi_200510)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2007","oct.2007","oct.2007")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20071101_t)
+nov2 <- mean(bd2$ndvi_20071109_a)
+nov3 <- mean(bd2$ndvi_20071117_t)
+nov4 <- mean(bd2$ndvi_20071125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2007","nov.2007","nov.2007","nov.2007")
+ noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20071203_t)
+dic2 <- mean(bd2$ndvi_20071211_a)
+dic3 <- mean(bd2$ndvi_20071219_t)
+dic4 <- mean(bd2$ndvi_20071227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2007","dic.2007","dic.2007","dic.2007")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+colnames(todo) <- c("ndvi","fechas")
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2007.csv", row.names = F)
+
+############################################### 2008
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2005
+ene1 <- mean(bd2$ndvi_20080101_t)
+ene2 <- mean(bd2$ndvi_20080109_a)
+ene3 <- mean(bd2$ndvi_20080117_t)
+ene4 <- mean(bd2$ndvi_20080125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2008","ene.2008","ene.2008","ene.2008")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20080202_t)
+feb2 <- mean(bd2$ndvi_20080210_a)
+feb3 <- mean(bd2$ndvi_20080218_t)
+feb4 <- mean(bd2$ndvi_20080226_a)
+
+febero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2008","feb.2008","feb.2008","feb.2008")
+febero <- cbind(febero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20080305_t)
+mar2 <- mean(bd2$ndvi_20080313_a)
+mar3 <- mean(bd2$ndvi_20080321_t)
+mar4 <- mean(bd2$ndvi_20080329_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2008","mar.2008","mar.2008","mar.2008")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20080406_t)
+abr2 <- mean(bd2$ndvi_20080414_a)
+abr3 <- mean(bd2$ndvi_20080422_t)
+abr4 <- mean(bd2$ndvi_20080430_a)
+abril <- rbind(abr1,abr2,abr3,abr4)
+fechas <- rbind("abr.2008","abr.2008","abr.2008","abr2008")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20080508_t)
+may2 <- mean(bd2$ndvi_20080516_a)
+may3 <- mean(bd2$ndvi_20080524_t)
+
+mayo <- rbind(may1,may2,may3)
+fechas <- rbind("may.2008","may.2008","may.2008")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20080601_a)
+jun2 <- mean(bd2$ndvi_20080609_t)
+jun3 <- mean(bd2$ndvi_20080617_a)
+jun4 <- mean(bd2$ndvi_20080625_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2008","jun.2008","jun.2008","jun.2008")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20080703_a)
+jul2 <- mean(bd2$ndvi_20080711_t)
+jul3 <- mean(bd2$ndvi_20080719_a)
+jul4 <- mean(bd2$ndvi_20080727_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2008","jul.2008","jul.2008","jul.2008")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20080804_a)
+ago2 <- mean(bd2$ndvi_20080812_t)
+ago3 <- mean(bd2$ndvi_20080820_a)
+ago4 <- mean(bd2$ndvi_20080828_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2008","ago.2008","ago.2008","ago.2008")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20080905_a)
+sep2 <- mean(bd2$ndvi_20080913_t)
+sep3 <- mean(bd2$ndvi_20080921_a)
+sep4 <- mean(bd2$ndvi_20080929_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2008","sep.2008","sep.2008","sep.2008")
+ septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20081007_a)
+oct2 <- mean(bd2$ndvi_20081015_t)
+oct3 <- mean(bd2$ndvi_20081023_a)
+oct4 <- mean(bd2$ndvi_20081031_t)
+
+octubre <- c(oct1,oct2,oct3,oct4)
+fechas <- rbind("oct.2008","oct.2008","oct.2008","oct.2008")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20081108_a)
+nov2 <- mean(bd2$ndvi_20081116_t)
+nov3 <- mean(bd2$ndvi_20081124_a)
+
+noviembre <- c(nov1,nov2,nov3)
+fechas <- rbind("nov.2008","nov.2008","nov.2008")
+ noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20081202_t)
+dic2 <- mean(bd2$ndvi_20081210_a)
+dic3 <- mean(bd2$ndvi_20081218_t)
+dic4 <- mean(bd2$ndvi_20081226_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2008","dic.2008","dic.2008","dic.2008")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+colnames(todo) <- c("ndvi","fechas")
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2008.csv", row.names = F)
+
+############################################### 2009
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+head(bd2)
+
+ene1 <- mean(bd2$ndvi_20090101_t)
+ene2 <- mean(bd2$ndvi_20090109_a)
+ene3 <- mean(bd2$ndvi_20090117_t)
+ene4 <- mean(bd2$ndvi_20090125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2009","ene.2009","ene.2009","ene.2009")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20090202_t)
+feb2 <- mean(bd2$ndvi_20090210_a)
+feb3 <- mean(bd2$ndvi_20090218_t)
+feb4 <- mean(bd2$ndvi_20090226_a)
+
+febrero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2009","feb.2009","feb.2009","feb.2009")
+febrero <- cbind(febrero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20090306_t)
+mar2 <- mean(bd2$ndvi_20090314_a)
+mar3 <- mean(bd2$ndvi_20090322_t)
+mar4 <- mean(bd2$ndvi_20090330_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2009","mar.2009","mar.2009","mar.2009")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20090407_t)
+abr2 <- mean(bd2$ndvi_20090415_a)
+abr3 <- mean(bd2$ndvi_20090423_t)
+
+abril <- rbind(abr1,abr2,abr3)
+fechas <- rbind("abr.2009","abr.2009","abr.2009")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20090501_a)
+may2 <- mean(bd2$ndvi_20090509_t)
+may3 <- mean(bd2$ndvi_20090517_a)
+may4 <- mean(bd2$ndvi_20090525_t)
+
+mayo <- rbind(may1,may2,may3,may4)
+fechas <- rbind("may.2009","may.2009","may.2009","may.2009")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20090602_a)
+jun2 <- mean(bd2$ndvi_20090610_t)
+jun3 <- mean(bd2$ndvi_20090618_a)
+jun4 <- mean(bd2$ndvi_20090626_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2009","jun.2009","jun.2009","jun.2009")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20090704_a)
+jul2 <- mean(bd2$ndvi_20090712_t)
+jul3 <- mean(bd2$ndvi_20090720_a)
+jul4 <- mean(bd2$ndvi_20090728_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2009","jul.2009","jul.2009","jul.2009")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20090805_a)
+ago2 <- mean(bd2$ndvi_20090813_t)
+ago3 <- mean(bd2$ndvi_20090821_a)
+ago4 <- mean(bd2$ndvi_20090829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2009","ago.2009","ago.2009","ago.2009")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20090906_a)
+sep2 <- mean(bd2$ndvi_20090914_t)
+sep3 <- mean(bd2$ndvi_20090922_a)
+sep4 <- mean(bd2$ndvi_20090930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2009","sep.2009","sep.2009","sep.2009")
+ septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20091008_a)
+oct2 <- mean(bd2$ndvi_20091016_t)
+oct3 <- mean(bd2$ndvi_20091024_a)
+#oct4 <- mean(bd2$ndvi_2009)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2009","oct.2009","oct.2009")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20091101_t)
+nov2 <- mean(bd2$ndvi_20091109_a)
+nov3 <- mean(bd2$ndvi_20091117_t)
+nov4 <- mean(bd2$ndvi_20091125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2009","nov.2009","nov.2009","nov.2009")
+ noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20091203_t)
+dic2 <- mean(bd2$ndvi_20091211_a)
+dic3 <- mean(bd2$ndvi_20091219_t)
+dic4 <- mean(bd2$ndvi_20091227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2009","dic.2009","dic.2009","dic.2009")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+colnames(todo) <- c("ndvi","fechas")
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2009.csv", row.names = F)
+
+############################################### 2010 
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2005
+ene1 <- mean(bd2$ndvi_20100101_t)
+ene2 <- mean(bd2$ndvi_20100109_a)
+ene3 <- mean(bd2$ndvi_20100117_t)
+ene4 <- mean(bd2$ndvi_20100125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2010","ene.2010","ene.2010","ene.2010")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+feb1 <- mean(bd2$ndvi_20100202_t)
+feb2 <- mean(bd2$ndvi_20100210_a)
+feb3 <- mean(bd2$ndvi_20100218_t)
+feb4 <- mean(bd2$ndvi_20100226_a)
+
+febero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2010","feb.2010","feb.2010","feb.2010")
+febero <- cbind(febero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+mar1 <- mean(bd2$ndvi_20100306_t)
+mar2 <- mean(bd2$ndvi_20100314_a)
+mar3 <- mean(bd2$ndvi_20100322_t)
+mar4 <- mean(bd2$ndvi_20100330_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2010","mar.2010","mar.2010","mar.2010")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+abr1 <- mean(bd2$ndvi_20100407_t)
+abr2 <- mean(bd2$ndvi_20100415_a)
+abr3 <- mean(bd2$ndvi_20100423_t)
+
+abril <- rbind(abr1,abr2,abr3)
+fechas <- rbind("abr.2010","abr.2010","abr.2010")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+may1 <- mean(bd2$ndvi_20100501_a)
+may2 <- mean(bd2$ndvi_20100509_t)
+may3 <- mean(bd2$ndvi_20100517_a)
+may4 <- mean(bd2$ndvi_20100525_t)
+
+mayo <- rbind(may1,may2,may3,may4)
+fechas <- rbind("may.2010","may.2010","may.2010","may.2010")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+jun1 <- mean(bd2$ndvi_20100602_a)
+jun2 <- mean(bd2$ndvi_20100610_t)
+jun3 <- mean(bd2$ndvi_20100618_a)
+jun4 <- mean(bd2$ndvi_20100626_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2010","jun.2010","jun.2010","jun.2010")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+jul1 <- mean(bd2$ndvi_20100704_a)
+jul2 <- mean(bd2$ndvi_20100712_t)
+jul3 <- mean(bd2$ndvi_20100720_a)
+jul4 <- mean(bd2$ndvi_20100728_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2010","jul.2010","jul.2010","jul.2010")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+ago1 <- mean(bd2$ndvi_20100805_a)
+ago2 <- mean(bd2$ndvi_20100813_t)
+ago3 <- mean(bd2$ndvi_20100821_a)
+ago4 <- mean(bd2$ndvi_20100829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2010","ago.2010","ago.2010","ago.2010")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+sep1 <- mean(bd2$ndvi_20100906_a)
+sep2 <- mean(bd2$ndvi_20100914_t)
+sep3 <- mean(bd2$ndvi_20100922_a)
+sep4 <- mean(bd2$ndvi_20100930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2010","sep.2010","sep.2010","sep.2010")
+septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+oct1 <- mean(bd2$ndvi_20101008_a)
+oct2 <- mean(bd2$ndvi_20101016_t)
+oct3 <- mean(bd2$ndvi_20101024_a)
+#oct4 <- mean(bd2$ndvi_200510)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2010","oct.2010","oct.2010")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+nov1 <- mean(bd2$ndvi_20101101_t)
+nov2 <- mean(bd2$ndvi_20101109_a)
+nov3 <- mean(bd2$ndvi_20101117_t)
+nov4 <- mean(bd2$ndvi_20101125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2010","nov.2010","nov.2010","nov.2010")
+noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+dic1 <- mean(bd2$ndvi_20101203_t)
+dic2 <- mean(bd2$ndvi_20101211_a)
+dic3 <- mean(bd2$ndvi_20101219_t)
+dic4 <- mean(bd2$ndvi_20101227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2010","dic.2010","dic.2010","dic.2010")
+diciembre <- cbind(diciembre,fechas)
+
+####################################################2011
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+head(bd2)
+
+ene1 <- mean(bd2$ndvi_20110101_t)
+ene2 <- mean(bd2$ndvi_20110109_a)
+ene3 <- mean(bd2$ndvi_20110117_t)
+ene4 <- mean(bd2$ndvi_20110125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2011","ene.2011","ene.2011","ene.2011")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20110202_t)
+feb2 <- mean(bd2$ndvi_20110210_a)
+feb3 <- mean(bd2$ndvi_20110218_t)
+feb4 <- mean(bd2$ndvi_20110226_a)
+
+febrero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2011","feb.2011","feb.2011","feb.2011")
+febrero <- cbind(febrero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20110306_t)
+mar2 <- mean(bd2$ndvi_20110314_a)
+mar3 <- mean(bd2$ndvi_20110322_t)
+mar4 <- mean(bd2$ndvi_20110330_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2011","mar.2011","mar.2011","mar.2011")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20110407_t)
+abr2 <- mean(bd2$ndvi_20110415_a)
+abr3 <- mean(bd2$ndvi_20110423_t)
+
+abril <- rbind(abr1,abr2,abr3)
+fechas <- rbind("abr.2011","abr.2011","abr.2011")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20110501_a)
+may2 <- mean(bd2$ndvi_20110509_t)
+may3 <- mean(bd2$ndvi_20110517_a)
+may4 <- mean(bd2$ndvi_20110525_t)
+
+mayo <- rbind(may1,may2,may3,may4)
+fechas <- rbind("may.2011","may.2011","may.2011","may.2011")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20110602_a)
+jun2 <- mean(bd2$ndvi_20110610_t)
+jun3 <- mean(bd2$ndvi_20110618_a)
+jun4 <- mean(bd2$ndvi_20110626_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2011","jun.2011","jun.2011","jun.2011")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20110704_a)
+jul2 <- mean(bd2$ndvi_20110712_t)
+jul3 <- mean(bd2$ndvi_20110720_a)
+jul4 <- mean(bd2$ndvi_20110728_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2011","jul.2011","jul.2011","jul.2011")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20110805_a)
+ago2 <- mean(bd2$ndvi_20110813_t)
+ago3 <- mean(bd2$ndvi_20110821_a)
+ago4 <- mean(bd2$ndvi_20110829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2011","ago.2011","ago.2011","ago.2011")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20110906_a)
+sep2 <- mean(bd2$ndvi_20110914_t)
+sep3 <- mean(bd2$ndvi_20110922_a)
+sep4 <- mean(bd2$ndvi_20110930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2011","sep.2011","sep.2011","sep.2011")
+ septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20111008_a)
+oct2 <- mean(bd2$ndvi_20111016_t)
+oct3 <- mean(bd2$ndvi_20111024_a)
+#oct4 <- mean(bd2$ndvi_2009)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2011","oct.2011","oct.2011")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20111101_t)
+nov2 <- mean(bd2$ndvi_20111109_a)
+nov3 <- mean(bd2$ndvi_20111117_t)
+nov4 <- mean(bd2$ndvi_20111125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2011","nov.2011","nov.2011","nov.2011")
+ noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20111203_t)
+dic2 <- mean(bd2$ndvi_20111211_a)
+dic3 <- mean(bd2$ndvi_20111219_t)
+dic4 <- mean(bd2$ndvi_20111227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2011","dic.2011","dic.2011","dic.2011")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+colnames(todo) <- c("ndvi","fechas")
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2011.csv", row.names = F)
+
+#################################################### 2012
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+head(bd2)
+
+ene1 <- mean(bd2$ndvi_20120101_t)
+ene2 <- mean(bd2$ndvi_20120109_a)
+ene3 <- mean(bd2$ndvi_20120117_t)
+ene4 <- mean(bd2$ndvi_20120125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2012","ene.2012","ene.2012","ene.2012")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20120202_t)
+feb2 <- mean(bd2$ndvi_20120210_a)
+feb3 <- mean(bd2$ndvi_20120218_t)
+feb4 <- mean(bd2$ndvi_20120226_a)
+
+febrero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2012","feb.2012","feb.2012","feb.2012")
+febrero <- cbind(febrero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20120305_t)
+mar2 <- mean(bd2$ndvi_20120313_a)
+mar3 <- mean(bd2$ndvi_20120321_t)
+mar4 <- mean(bd2$ndvi_20120329_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2012","mar.2012","mar.2012","mar.2012")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20120406_t)
+abr2 <- mean(bd2$ndvi_20120414_a)
+abr3 <- mean(bd2$ndvi_20120422_t)
+abr4 <- mean(bd2$ndvi_20120430_a)
+
+abril <- rbind(abr1,abr2,abr3,abr4)
+fechas <- rbind("abr.2012","abr.2012","abr.2012","abr.2012")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20120508_t)
+may2 <- mean(bd2$ndvi_20120516_a)
+may3 <- mean(bd2$ndvi_20120524_t)
+
+mayo <- rbind(may1,may2,may3)
+fechas <- rbind("may.2012","may.2012","may.2012")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20120601_a)
+jun2 <- mean(bd2$ndvi_20120609_t)
+jun3 <- mean(bd2$ndvi_20120617_a)
+jun4 <- mean(bd2$ndvi_20120625_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2012","jun.2012","jun.2012","jun.2012")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20120703_a)
+jul2 <- mean(bd2$ndvi_20120711_t)
+jul3 <- mean(bd2$ndvi_20120719_a)
+jul4 <- mean(bd2$ndvi_20120727_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2012","jul.2012","jul.2012","jul.2012")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20120804_a)
+ago2 <- mean(bd2$ndvi_20120812_t)
+ago3 <- mean(bd2$ndvi_20120820_a)
+ago4 <- mean(bd2$ndvi_20120828_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2012","ago.2012","ago.2012","ago.2012")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20120905_a)
+sep2 <- mean(bd2$ndvi_20120913_t)
+sep3 <- mean(bd2$ndvi_20120921_a)
+sep4 <- mean(bd2$ndvi_20120929_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2012","sep.2012","sep.2012","sep.2012")
+ septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20121007_a)
+oct2 <- mean(bd2$ndvi_20121015_t)
+oct3 <- mean(bd2$ndvi_20121023_a)
+oct4 <- mean(bd2$ndvi_20121031_t)
+
+octubre <- c(oct1,oct2,oct3,oct4)
+fechas <- rbind("oct.2012","oct.2012","oct.2012","oct.2012")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20121108_a)
+nov2 <- mean(bd2$ndvi_20121116_t)
+nov3 <- mean(bd2$ndvi_20121124_a)
+
+noviembre <- c(nov1,nov2,nov3)
+fechas <- rbind("nov.2012","nov.2012","nov.2012")
+noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20121202_t)
+dic2 <- mean(bd2$ndvi_20121210_a)
+dic3 <- mean(bd2$ndvi_20121218_t)
+dic4 <- mean(bd2$ndvi_20121226_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2012","dic.2012","dic.2012","dic.2012")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+colnames(todo) <- c("ndvi","fechas")
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2012.csv", row.names = F)
+
+#################################################### 2013
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ene1 <- mean(bd2$ndvi_20130101_t)
+ene2 <- mean(bd2$ndvi_20130109_a)
+ene3 <- mean(bd2$ndvi_20130117_t)
+ene4 <- mean(bd2$ndvi_20130125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2013","ene.2013","ene.2013","ene.2013")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20130202_t)
+feb2 <- mean(bd2$ndvi_20130210_a)
+feb3 <- mean(bd2$ndvi_20130218_t)
+feb4 <- mean(bd2$ndvi_20130226_a)
+
+febrero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2013","feb.2013","feb.2013","feb.2013")
+febrero <- cbind(febrero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20130306_t)
+mar2 <- mean(bd2$ndvi_20130314_a)
+mar3 <- mean(bd2$ndvi_20130322_t)
+mar4 <- mean(bd2$ndvi_20130330_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2013","mar.2013","mar.2013","mar.2013")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20130407_t)
+abr2 <- mean(bd2$ndvi_20130415_a)
+abr3 <- mean(bd2$ndvi_20130423_t)
+
+abril <- rbind(abr1,abr2,abr3)
+fechas <- rbind("abr.2013","abr.2013","abr.2013")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20130501_a)
+may2 <- mean(bd2$ndvi_20130509_t)
+may3 <- mean(bd2$ndvi_20130517_a)
+may4 <- mean(bd2$ndvi_20130525_t)
+
+mayo <- rbind(may1,may2,may3,may4)
+fechas <- rbind("may.2013","may.2013","may.2013","may.2013")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20130602_a)
+jun2 <- mean(bd2$ndvi_20130610_t)
+jun3 <- mean(bd2$ndvi_20130618_a)
+jun4 <- mean(bd2$ndvi_20130626_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2013","jun.2013","jun.2013","jun.2013")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20130704_a)
+jul2 <- mean(bd2$ndvi_20130712_t)
+jul3 <- mean(bd2$ndvi_20130720_a)
+jul4 <- mean(bd2$ndvi_20130728_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2013","jul.2013","jul.2013","jul.2013")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20130805_a)
+ago2 <- mean(bd2$ndvi_20130813_t)
+ago3 <- mean(bd2$ndvi_20130821_a)
+ago4 <- mean(bd2$ndvi_20130829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2013","ago.2013","ago.2013","ago.2013")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20130906_a)
+sep2 <- mean(bd2$ndvi_20130914_t)
+sep3 <- mean(bd2$ndvi_20130922_a)
+sep4 <- mean(bd2$ndvi_20130930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2013","sep.2013","sep.2013","sep.2013")
+ septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20131008_a)
+oct2 <- mean(bd2$ndvi_20131016_t)
+oct3 <- mean(bd2$ndvi_20131024_a)
+#oct4 <- mean(bd2$ndvi_2009)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2013","oct.2013","oct.2013")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20131101_t)
+nov2 <- mean(bd2$ndvi_20131109_a)
+nov3 <- mean(bd2$ndvi_20131117_t)
+nov4 <- mean(bd2$ndvi_20131125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2013","nov.2013","nov.2013","nov.2013")
+ noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20131203_t)
+dic2 <- mean(bd2$ndvi_20131211_a)
+dic3 <- mean(bd2$ndvi_20131219_t)
+dic4 <- mean(bd2$ndvi_20131227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2013","dic.2013","dic.2013","dic.2013")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+colnames(todo) <- c("ndvi","fechas")
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2013.csv", row.names = F)
+
+#################################################### 2014
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+head(bd2)
+
+ene1 <- mean(bd2$ndvi_20140101_t)
+ene2 <- mean(bd2$ndvi_20140109_a)
+ene3 <- mean(bd2$ndvi_20140117_t)
+ene4 <- mean(bd2$ndvi_20140125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2014","ene.2014","ene.2014","ene.2014")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20140202_t)
+feb2 <- mean(bd2$ndvi_20140210_a)
+feb3 <- mean(bd2$ndvi_20140218_t)
+feb4 <- mean(bd2$ndvi_20140226_a)
+
+febrero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2014","feb.2014","feb.2014","feb.2014")
+febrero <- cbind(febrero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20140306_t)
+mar2 <- mean(bd2$ndvi_20140314_a)
+mar3 <- mean(bd2$ndvi_20140322_t)
+mar4 <- mean(bd2$ndvi_20140330_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2014","mar.2014","mar.2014","mar.2014")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20140407_t)
+abr2 <- mean(bd2$ndvi_20140415_a)
+abr3 <- mean(bd2$ndvi_20140423_t)
+
+abril <- rbind(abr1,abr2,abr3)
+fechas <- rbind("abr.2014","abr.2014","abr.2014")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20140501_a)
+may2 <- mean(bd2$ndvi_20140509_t)
+may3 <- mean(bd2$ndvi_20140517_a)
+may4 <- mean(bd2$ndvi_20140525_t)
+
+mayo <- rbind(may1,may2,may3,may4)
+fechas <- rbind("may.2014","may.2014","may.2014","may.2014")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20140602_a)
+jun2 <- mean(bd2$ndvi_20140610_t)
+jun3 <- mean(bd2$ndvi_20140618_a)
+jun4 <- mean(bd2$ndvi_20140626_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2014","jun.2014","jun.2014","jun.2014")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20140704_a)
+jul2 <- mean(bd2$ndvi_20140712_t)
+jul3 <- mean(bd2$ndvi_20140720_a)
+jul4 <- mean(bd2$ndvi_20140728_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2014","jul.2014","jul.2014","jul.2014")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20140805_a)
+ago2 <- mean(bd2$ndvi_20140813_t)
+ago3 <- mean(bd2$ndvi_20140821_a)
+ago4 <- mean(bd2$ndvi_20140829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2014","ago.2014","ago.2014","ago.2014")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20140906_a)
+sep2 <- mean(bd2$ndvi_20140914_t)
+sep3 <- mean(bd2$ndvi_20140922_a)
+sep4 <- mean(bd2$ndvi_20140930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2014","sep.2014","sep.2014","sep.2014")
+ septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20141008_a)
+oct2 <- mean(bd2$ndvi_20141016_t)
+oct3 <- mean(bd2$ndvi_20141024_a)
+#oct4 <- mean(bd2$ndvi_2009)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2014","oct.2014","oct.2014")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20141101_t)
+nov2 <- mean(bd2$ndvi_20141109_a)
+nov3 <- mean(bd2$ndvi_20141117_t)
+nov4 <- mean(bd2$ndvi_20141125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2014","nov.2014","nov.2014","nov.2014")
+ noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20141203_t)
+dic2 <- mean(bd2$ndvi_20141211_a)
+dic3 <- mean(bd2$ndvi_20141219_t)
+dic4 <- mean(bd2$ndvi_20141227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2014","dic.2014","dic.2014","dic.2014")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+colnames(todo) <- c("ndvi","fechas")
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2014.csv", row.names = F)
+
+#################################################### 2015
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2005
+ene1 <- mean(bd2$ndvi_20150101_t)
+ene2 <- mean(bd2$ndvi_20150109_a)
+ene3 <- mean(bd2$ndvi_20150117_t)
+ene4 <- mean(bd2$ndvi_20150125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2015","ene.2015","ene.2015","ene.2015")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+feb1 <- mean(bd2$ndvi_20150202_t)
+feb2 <- mean(bd2$ndvi_20150210_a)
+feb3 <- mean(bd2$ndvi_20150218_t)
+feb4 <- mean(bd2$ndvi_20150226_a)
+
+febero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2015","feb.2015","feb.2015","feb.2015")
+febero <- cbind(febero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+mar1 <- mean(bd2$ndvi_20150306_t)
+mar2 <- mean(bd2$ndvi_20150314_a)
+mar3 <- mean(bd2$ndvi_20150322_t)
+mar4 <- mean(bd2$ndvi_20150330_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2015","mar.2015","mar.2015","mar.2015")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+abr1 <- mean(bd2$ndvi_20150407_t)
+abr2 <- mean(bd2$ndvi_20150415_a)
+abr3 <- mean(bd2$ndvi_20150423_t)
+
+abril <- rbind(abr1,abr2,abr3)
+fechas <- rbind("abr.2015","abr.2015","abr.2015")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+may1 <- mean(bd2$ndvi_20150501_a)
+may2 <- mean(bd2$ndvi_20150509_t)
+may3 <- mean(bd2$ndvi_20150517_a)
+may4 <- mean(bd2$ndvi_20150525_t)
+
+mayo <- rbind(may1,may2,may3,may4)
+fechas <- rbind("may.2015","may.2015","may.2015","may.2015")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+jun1 <- mean(bd2$ndvi_20150602_a)
+jun2 <- mean(bd2$ndvi_20150610_t)
+jun3 <- mean(bd2$ndvi_20150618_a)
+jun4 <- mean(bd2$ndvi_20150626_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2015","jun.2015","jun.2015","jun.2015")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+jul1 <- mean(bd2$ndvi_20150704_a)
+jul2 <- mean(bd2$ndvi_20150712_t)
+jul3 <- mean(bd2$ndvi_20150720_a)
+jul4 <- mean(bd2$ndvi_20150728_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2015","jul.2015","jul.2015","jul.2015")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+ago1 <- mean(bd2$ndvi_20150805_a)
+ago2 <- mean(bd2$ndvi_20150813_t)
+ago3 <- mean(bd2$ndvi_20150821_a)
+ago4 <- mean(bd2$ndvi_20150829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2015","ago.2015","ago.2015","ago.2015")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+sep1 <- mean(bd2$ndvi_20150906_a)
+sep2 <- mean(bd2$ndvi_20150914_t)
+sep3 <- mean(bd2$ndvi_20150922_a)
+sep4 <- mean(bd2$ndvi_20150930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2015","sep.2015","sep.2015","sep.2015")
+septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+oct1 <- mean(bd2$ndvi_20151008_a)
+oct2 <- mean(bd2$ndvi_20151016_t)
+oct3 <- mean(bd2$ndvi_20151024_a)
+#oct4 <- mean(bd2$ndvi_200510)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2015","oct.2015","oct.2015")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+nov1 <- mean(bd2$ndvi_20151101_t)
+nov2 <- mean(bd2$ndvi_20151109_a)
+nov3 <- mean(bd2$ndvi_20151117_t)
+nov4 <- mean(bd2$ndvi_20151125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2015","nov.2015","nov.2015","nov.2015")
+noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+dic1 <- mean(bd2$ndvi_20151203_t)
+dic2 <- mean(bd2$ndvi_20151211_a)
+dic3 <- mean(bd2$ndvi_20151219_t)
+dic4 <- mean(bd2$ndvi_20151227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2015","dic.2015","dic.2015","dic.2015")
+diciembre <- cbind(diciembre,fechas)
+
+############################################################# 2016
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2005
+ene1 <- mean(bd2$ndvi_20160101_t)
+ene2 <- mean(bd2$ndvi_20160109_a)
+ene3 <- mean(bd2$ndvi_20160117_t)
+ene4 <- mean(bd2$ndvi_20160125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2016","ene.2016","ene.2016","ene.2016")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20160202_t)
+feb2 <- mean(bd2$ndvi_20160210_a)
+feb3 <- mean(bd2$ndvi_20160218_t)
+feb4 <- mean(bd2$ndvi_20160226_a)
+
+febero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2016","feb.2016","feb.2016","feb.2016")
+febero <- cbind(febero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20160305_t)
+mar2 <- mean(bd2$ndvi_20160313_a)
+mar3 <- mean(bd2$ndvi_20160321_t)
+mar4 <- mean(bd2$ndvi_20160329_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2016","mar.2016","mar.2016","mar.2016")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20160406_t)
+abr2 <- mean(bd2$ndvi_20160414_a)
+abr3 <- mean(bd2$ndvi_20160422_t)
+abr4 <- mean(bd2$ndvi_20160430_a)
+abril <- rbind(abr1,abr2,abr3,abr4)
+fechas <- rbind("abr.2016","abr.2016","abr.2016","abr2016")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20160508_t)
+may2 <- mean(bd2$ndvi_20160516_a)
+may3 <- mean(bd2$ndvi_20160524_t)
+
+mayo <- rbind(may1,may2,may3)
+fechas <- rbind("may.2016","may.2016","may.2016")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20160601_a)
+jun2 <- mean(bd2$ndvi_20160609_t)
+jun3 <- mean(bd2$ndvi_20160617_a)
+jun4 <- mean(bd2$ndvi_20160625_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2016","jun.2016","jun.2016","jun.2016")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20160703_a)
+jul2 <- mean(bd2$ndvi_20160711_t)
+jul3 <- mean(bd2$ndvi_20160719_a)
+jul4 <- mean(bd2$ndvi_20160727_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2016","jul.2016","jul.2016","jul.2016")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20160804_a)
+ago2 <- mean(bd2$ndvi_20160812_t)
+ago3 <- mean(bd2$ndvi_20160820_a)
+ago4 <- mean(bd2$ndvi_20160828_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2016","ago.2016","ago.2016","ago.2016")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20160905_a)
+sep2 <- mean(bd2$ndvi_20160913_t)
+sep3 <- mean(bd2$ndvi_20160921_a)
+sep4 <- mean(bd2$ndvi_20160929_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2016","sep.2016","sep.2016","sep.2016")
+ septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20161007_a)
+oct2 <- mean(bd2$ndvi_20161015_t)
+oct3 <- mean(bd2$ndvi_20161023_a)
+oct4 <- mean(bd2$ndvi_20161031_t)
+
+octubre <- c(oct1,oct2,oct3,oct4)
+fechas <- rbind("oct.2016","oct.2016","oct.2016","oct.2016")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20161108_a)
+nov2 <- mean(bd2$ndvi_20161116_t)
+nov3 <- mean(bd2$ndvi_20161124_a)
+
+noviembre <- c(nov1,nov2,nov3)
+fechas <- rbind("nov.2016","nov.2016","nov.2016")
+ noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20161202_t)
+dic2 <- mean(bd2$ndvi_20161210_a)
+dic3 <- mean(bd2$ndvi_20161218_t)
+dic4 <- mean(bd2$ndvi_20161226_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2016","dic.2016","dic.2016","dic.2016")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+colnames(todo) <- c("ndvi","fechas")
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2016.csv", row.names = F)
+
+
+############################################################## 2017
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+head(bd2)
+
+ene1 <- mean(bd2$ndvi_20170101_t)
+ene2 <- mean(bd2$ndvi_20170109_a)
+ene3 <- mean(bd2$ndvi_20170117_t)
+ene4 <- mean(bd2$ndvi_20170125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2017","ene.2017","ene.2017","ene.2017")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20170202_t)
+feb2 <- mean(bd2$ndvi_20170210_a)
+feb3 <- mean(bd2$ndvi_20170218_t)
+feb4 <- mean(bd2$ndvi_20170226_a)
+
+febrero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2017","feb.2017","feb.2017","feb.2017")
+febrero <- cbind(febrero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20170306_t)
+mar2 <- mean(bd2$ndvi_20170314_a)
+mar3 <- mean(bd2$ndvi_20170322_t)
+mar4 <- mean(bd2$ndvi_20170330_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2017","mar.2017","mar.2017","mar.2017")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20170407_t)
+abr2 <- mean(bd2$ndvi_20170415_a)
+abr3 <- mean(bd2$ndvi_20170423_t)
+
+abril <- rbind(abr1,abr2,abr3)
+fechas <- rbind("abr.2017","abr.2017","abr.2017")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20170501_a)
+may2 <- mean(bd2$ndvi_20170509_t)
+may3 <- mean(bd2$ndvi_20170517_a)
+may4 <- mean(bd2$ndvi_20170525_t)
+
+mayo <- rbind(may1,may2,may3,may4)
+fechas <- rbind("may.2017","may.2017","may.2017","may.2017")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20170602_a)
+jun2 <- mean(bd2$ndvi_20170610_t)
+jun3 <- mean(bd2$ndvi_20170618_a)
+jun4 <- mean(bd2$ndvi_20170626_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2017","jun.2017","jun.2017","jun.2017")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20170704_a)
+jul2 <- mean(bd2$ndvi_20170712_t)
+jul3 <- mean(bd2$ndvi_20170720_a)
+jul4 <- mean(bd2$ndvi_20170728_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2017","jul.2017","jul.2017","jul.2017")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20170805_a)
+ago2 <- mean(bd2$ndvi_20170813_t)
+ago3 <- mean(bd2$ndvi_20170821_a)
+ago4 <- mean(bd2$ndvi_20170829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2017","ago.2017","ago.2017","ago.2017")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20170906_a)
+sep2 <- mean(bd2$ndvi_20170914_t)
+sep3 <- mean(bd2$ndvi_20170922_a)
+sep4 <- mean(bd2$ndvi_20170930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2017","sep.2017","sep.2017","sep.2017")
+ septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20171008_a)
+oct2 <- mean(bd2$ndvi_20171016_t)
+oct3 <- mean(bd2$ndvi_20171024_a)
+#oct4 <- mean(bd2$ndvi_2009)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2017","oct.2017","oct.2017")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20171101_t)
+nov2 <- mean(bd2$ndvi_20171109_a)
+nov3 <- mean(bd2$ndvi_20171117_t)
+nov4 <- mean(bd2$ndvi_20171125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2017","nov.2017","nov.2017","nov.2017")
+ noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20171203_t)
+dic2 <- mean(bd2$ndvi_20171211_a)
+dic3 <- mean(bd2$ndvi_20171219_t)
+dic4 <- mean(bd2$ndvi_20171227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2017","dic.2017","dic.2017","dic.2017")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+colnames(todo) <- c("ndvi","fechas")
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2017.csv", row.names = F)
+
+################################################ 2018
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+head(bd2)
+
+ene1 <- mean(bd2$ndvi_20180101_t)
+ene2 <- mean(bd2$ndvi_20180109_a)
+ene3 <- mean(bd2$ndvi_20180117_t)
+ene4 <- mean(bd2$ndvi_20180125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2018","ene.2018","ene.2018","ene.2018")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20180202_t)
+feb2 <- mean(bd2$ndvi_20180210_a)
+feb3 <- mean(bd2$ndvi_20180218_t)
+feb4 <- mean(bd2$ndvi_20180226_a)
+
+febrero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2018","feb.2018","feb.2018","feb.2018")
+febrero <- cbind(febrero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20180306_t)
+mar2 <- mean(bd2$ndvi_20180314_a)
+mar3 <- mean(bd2$ndvi_20180322_t)
+mar4 <- mean(bd2$ndvi_20180330_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2018","mar.2018","mar.2018","mar.2018")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20180407_t)
+abr2 <- mean(bd2$ndvi_20180415_a)
+abr3 <- mean(bd2$ndvi_20180423_t)
+
+abril <- rbind(abr1,abr2,abr3)
+fechas <- rbind("abr.2018","abr.2018","abr.2018")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20180501_a)
+may2 <- mean(bd2$ndvi_20180509_t)
+may3 <- mean(bd2$ndvi_20180517_a)
+may4 <- mean(bd2$ndvi_20180525_t)
+
+mayo <- rbind(may1,may2,may3,may4)
+fechas <- rbind("may.2018","may.2018","may.2018","may.2018")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20180602_a)
+jun2 <- mean(bd2$ndvi_20180610_t)
+jun3 <- mean(bd2$ndvi_20180618_a)
+jun4 <- mean(bd2$ndvi_20180626_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2018","jun.2018","jun.2018","jun.2018")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20180704_a)
+jul2 <- mean(bd2$ndvi_20180712_t)
+jul3 <- mean(bd2$ndvi_20180720_a)
+jul4 <- mean(bd2$ndvi_20180728_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2018","jul.2018","jul.2018","jul.2018")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20180805_a)
+ago2 <- mean(bd2$ndvi_20180813_t)
+ago3 <- mean(bd2$ndvi_20180821_a)
+ago4 <- mean(bd2$ndvi_20180829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2018","ago.2018","ago.2018","ago.2018")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20180906_a)
+sep2 <- mean(bd2$ndvi_20180914_t)
+sep3 <- mean(bd2$ndvi_20180922_a)
+sep4 <- mean(bd2$ndvi_20180930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2018","sep.2018","sep.2018","sep.2018")
+ septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20181008_a)
+oct2 <- mean(bd2$ndvi_20181016_t)
+oct3 <- mean(bd2$ndvi_20181024_a)
+#oct4 <- mean(bd2$ndvi_2009)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2018","oct.2018","oct.2018")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20181101_t)
+nov2 <- mean(bd2$ndvi_20181109_a)
+nov3 <- mean(bd2$ndvi_20181117_t)
+nov4 <- mean(bd2$ndvi_20181125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2018","nov.2018","nov.2018","nov.2018")
+ noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20181203_t)
+dic2 <- mean(bd2$ndvi_20181211_a)
+dic3 <- mean(bd2$ndvi_20181219_t)
+dic4 <- mean(bd2$ndvi_20181227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2018","dic.2018","dic.2018","dic.2018")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+colnames(todo) <- c("ndvi","fechas")
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2018.csv", row.names = F)
+
+################################################# 2019
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+head(bd2)
+
+ene1 <- mean(bd2$ndvi_20190101_t)
+ene2 <- mean(bd2$ndvi_20190109_a)
+ene3 <- mean(bd2$ndvi_20190117_t)
+ene4 <- mean(bd2$ndvi_20190125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2019","ene.2019","ene.2019","ene.2019")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20190202_t)
+feb2 <- mean(bd2$ndvi_20190210_a)
+feb3 <- mean(bd2$ndvi_20190218_t)
+feb4 <- mean(bd2$ndvi_20190226_a)
+
+febrero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2019","feb.2019","feb.2019","feb.2019")
+febrero <- cbind(febrero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20190306_t)
+mar2 <- mean(bd2$ndvi_20190314_a)
+mar3 <- mean(bd2$ndvi_20190322_t)
+mar4 <- mean(bd2$ndvi_20190330_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2019","mar.2019","mar.2019","mar.2019")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20190407_t)
+abr2 <- mean(bd2$ndvi_20190415_a)
+abr3 <- mean(bd2$ndvi_20190423_t)
+
+abril <- rbind(abr1,abr2,abr3)
+fechas <- rbind("abr.2019","abr.2019","abr.2019")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20190501_a)
+may2 <- mean(bd2$ndvi_20190509_t)
+may3 <- mean(bd2$ndvi_20190517_a)
+may4 <- mean(bd2$ndvi_20190525_t)
+
+mayo <- rbind(may1,may2,may3,may4)
+fechas <- rbind("may.2019","may.2019","may.2019","may.2019")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20190602_a)
+jun2 <- mean(bd2$ndvi_20190610_t)
+jun3 <- mean(bd2$ndvi_20190618_a)
+jun4 <- mean(bd2$ndvi_20190626_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2019","jun.2019","jun.2019","jun.2019")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20190704_a)
+jul2 <- mean(bd2$ndvi_20190712_t)
+jul3 <- mean(bd2$ndvi_20190720_a)
+jul4 <- mean(bd2$ndvi_20190728_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2019","jul.2019","jul.2019","jul.2019")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20190805_a)
+ago2 <- mean(bd2$ndvi_20190813_t)
+ago3 <- mean(bd2$ndvi_20190821_a)
+ago4 <- mean(bd2$ndvi_20190829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2019","ago.2019","ago.2019","ago.2019")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20190906_a)
+sep2 <- mean(bd2$ndvi_20190914_t)
+sep3 <- mean(bd2$ndvi_20190922_a)
+sep4 <- mean(bd2$ndvi_20190930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2019","sep.2019","sep.2019","sep.2019")
+ septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20191008_a)
+oct2 <- mean(bd2$ndvi_20191016_t)
+oct3 <- mean(bd2$ndvi_20191024_a)
+#oct4 <- mean(bd2$ndvi_2009)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2019","oct.2019","oct.2019")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20191101_t)
+nov2 <- mean(bd2$ndvi_20191109_a)
+nov3 <- mean(bd2$ndvi_20191117_t)
+nov4 <- mean(bd2$ndvi_20191125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2019","nov.2019","nov.2019","nov.2019")
+ noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20191203_t)
+dic2 <- mean(bd2$ndvi_20191211_a)
+dic3 <- mean(bd2$ndvi_20191219_t)
+dic4 <- mean(bd2$ndvi_20191227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2019","dic.2019","dic.2019","dic.2019")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+colnames(todo) <- c("ndvi","fechas")
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2019.csv", row.names = F)
+
+############################################################### 2020
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2005
+ene1 <- mean(bd2$ndvi_20200101_t)
+ene2 <- mean(bd2$ndvi_20200109_a)
+ene3 <- mean(bd2$ndvi_20200117_t)
+ene4 <- mean(bd2$ndvi_20200125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2020","ene.2020","ene.2020","ene.2020")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+feb1 <- mean(bd2$ndvi_20200202_t)
+feb2 <- mean(bd2$ndvi_20200210_a)
+feb3 <- mean(bd2$ndvi_20200218_t)
+feb4 <- mean(bd2$ndvi_20200226_a)
+
+febero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2020","feb.2020","feb.2020","feb.2020")
+febero <- cbind(febero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+mar1 <- mean(bd2$ndvi_20200305_t)
+mar2 <- mean(bd2$ndvi_20200313_a)
+mar3 <- mean(bd2$ndvi_20200321_t)
+mar4 <- mean(bd2$ndvi_20200329_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2020","mar.2020","mar.2020","mar.2020")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+abr1 <- mean(bd2$ndvi_20200406_t)
+abr2 <- mean(bd2$ndvi_20200414_a)
+abr3 <- mean(bd2$ndvi_20200422_t)
+abr4 <- mean(bd2$ndvi_20200430_a)
+
+abril <- rbind(abr1,abr2,abr3, abr4)
+fechas <- rbind("abr.2020","abr.2020","abr.2020", "abr.2020")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+may1 <- mean(bd2$ndvi_20200508_t)
+may2 <- mean(bd2$ndvi_20200516_a)
+may3 <- mean(bd2$ndvi_20200524_t)
+
+mayo <- rbind(may1,may2,may3)
+fechas <- rbind("may.2020","may.2020","may.2020")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+jun1 <- mean(bd2$ndvi_20200601_a)
+jun2 <- mean(bd2$ndvi_20200609_t)
+jun3 <- mean(bd2$ndvi_20200617_a)
+jun4 <- mean(bd2$ndvi_20200625_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2020","jun.2020","jun.2020","jun.2020")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+jul1 <- mean(bd2$ndvi_20200703_a)
+jul2 <- mean(bd2$ndvi_20200711_t)
+jul3 <- mean(bd2$ndvi_20200719_a)
+jul4 <- mean(bd2$ndvi_20200727_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2020","jul.2020","jul.2020","jul.2020")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+ago1 <- mean(bd2$ndvi_20200804_a)
+ago2 <- mean(bd2$ndvi_20200812_t)
+ago3 <- mean(bd2$ndvi_20200820_a)
+ago4 <- mean(bd2$ndvi_20200828_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2020","ago.2020","ago.2020","ago.2020")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+sep1 <- mean(bd2$ndvi_20200905_a)
+sep2 <- mean(bd2$ndvi_20200913_t)
+sep3 <- mean(bd2$ndvi_20200921_a)
+sep4 <- mean(bd2$ndvi_20200929_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2020","sep.2020","sep.2020","sep.2020")
+septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+oct1 <- mean(bd2$ndvi_20201007_a)
+oct2 <- mean(bd2$ndvi_20201015_t)
+oct3 <- mean(bd2$ndvi_20201023_a)
+oct4 <- mean(bd2$ndvi_20201031_t)
+
+octubre <- c(oct1,oct2,oct3, oct4)
+fechas <- rbind("oct.2020","oct.2020","oct.2020", "oct.2020")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+nov1 <- mean(bd2$ndvi_20201108_a)
+nov2 <- mean(bd2$ndvi_20201116_t)
+nov3 <- mean(bd2$ndvi_20201124_a)
+#nov4 <- mean(bd2$ndvi_20201125_a)
+
+noviembre <- c(nov1,nov2,nov3)
+fechas <- rbind("nov.2020","nov.2020","nov.2020")
+noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+#extaemos los valores promedios de todas las imagenes del 2000, 2005, 2010, 2015 y 2020
+dic1 <- mean(bd2$ndvi_20201202_t)
+dic2 <- mean(bd2$ndvi_20201210_a)
+dic3 <- mean(bd2$ndvi_20201218_t)
+dic4 <- mean(bd2$ndvi_20201226_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2020","dic.2020","dic.2020","dic.2020")
+diciembre <- cbind(diciembre,fechas)
+
+
+
+
+#se unen todos los vectores
+todo <- rbind(enero,febero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+
+head(todo)
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2020.csv", row.names = F)
+
+####################################################### 2021
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/enero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+xy <- read.csv("puntos.csv")
+bd <- extract(ndvi, xy)
+head(bd)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+head(bd2)
+
+ene1 <- mean(bd2$ndvi_20210101_t)
+ene2 <- mean(bd2$ndvi_20210109_a)
+ene3 <- mean(bd2$ndvi_20210117_t)
+ene4 <- mean(bd2$ndvi_20210125_a)
+
+enero <- rbind(ene1,ene2,ene3,ene4)
+fechas <- rbind("ene.2021","ene.2021","ene.2021","ene.2021")
+enero <- cbind(enero,fechas)
+
+#añadimos el siguiente mes
+#febrero
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/febrero/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+feb1 <- mean(bd2$ndvi_20210202_t)
+feb2 <- mean(bd2$ndvi_20210210_a)
+feb3 <- mean(bd2$ndvi_20210218_t)
+feb4 <- mean(bd2$ndvi_20210226_a)
+
+febrero <- rbind(feb1,feb2,feb3,feb4)
+fechas <- rbind("feb.2021","feb.2021","feb.2021","feb.2021")
+febrero <- cbind(febrero,fechas)
+
+#añadimos el siguiente mes
+#marzo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/marzo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+mar1 <- mean(bd2$ndvi_20210306_t)
+mar2 <- mean(bd2$ndvi_20210314_a)
+mar3 <- mean(bd2$ndvi_20210322_t)
+mar4 <- mean(bd2$ndvi_20210330_a)
+
+marzo <- rbind(mar1,mar2,mar3,mar4)
+fechas <- rbind("mar.2021","mar.2021","mar.2021","mar.2021")
+marzo <- cbind(marzo,fechas)
+
+#añadimos el siguiente mes
+#abril
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/abril/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+abr1 <- mean(bd2$ndvi_20210407_t)
+abr2 <- mean(bd2$ndvi_20210415_a)
+abr3 <- mean(bd2$ndvi_20210423_t)
+
+abril <- rbind(abr1,abr2,abr3)
+fechas <- rbind("abr.2021","abr.2021","abr.2021")
+abril <- cbind(abril,fechas)
+
+#añadimos el siguiente mes
+#mayo
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/mayo/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+may1 <- mean(bd2$ndvi_20210501_a)
+may2 <- mean(bd2$ndvi_20210509_t)
+may3 <- mean(bd2$ndvi_20210517_a)
+may4 <- mean(bd2$ndvi_20210525_t)
+
+mayo <- rbind(may1,may2,may3,may4)
+fechas <- rbind("may.2021","may.2021","may.2021","may.2021")
+mayo <- cbind(mayo,fechas)
+
+#añadimos el siguiente mes
+#junio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/junio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jun1 <- mean(bd2$ndvi_20210602_a)
+jun2 <- mean(bd2$ndvi_20210610_t)
+jun3 <- mean(bd2$ndvi_20210618_a)
+jun4 <- mean(bd2$ndvi_20210626_t)
+
+junio <- rbind(jun1,jun2,jun3,jun4)
+fechas <- rbind("jun.2021","jun.2021","jun.2021","jun.2021")
+junio <- cbind(junio,fechas)
+
+#añadimos el siguiente mes
+#julio
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/julio/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+jul1 <- mean(bd2$ndvi_20210704_a)
+jul2 <- mean(bd2$ndvi_20210712_t)
+jul3 <- mean(bd2$ndvi_20210720_a)
+jul4 <- mean(bd2$ndvi_20210728_t)
+
+julio <- rbind(jul1,jul2,jul3,jul4)
+fechas <- rbind("jul.2021","jul.2021","jul.2021","jul.2021")
+julio <- cbind(julio,fechas)
+
+#añadimos el siguiente mes
+#agosto
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/agosto//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+ago1 <- mean(bd2$ndvi_20210805_a)
+ago2 <- mean(bd2$ndvi_20210813_t)
+ago3 <- mean(bd2$ndvi_20210821_a)
+ago4 <- mean(bd2$ndvi_20210829_t)
+
+agosto <- rbind(ago1,ago2,ago3,ago4)
+fechas <- rbind("ago.2021","ago.2021","ago.2021","ago.2021")
+agosto<- cbind(agosto,fechas)
+
+#añadimos el siguiente mes
+#septiembre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/septiembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+sep1 <- mean(bd2$ndvi_20210906_a)
+sep2 <- mean(bd2$ndvi_20210914_t)
+sep3 <- mean(bd2$ndvi_20210922_a)
+sep4 <- mean(bd2$ndvi_20210930_t)
+
+septiembre <- c(sep1,sep2,sep3,sep4)
+fechas <- rbind("sep.2021","sep.2021","sep.2021","sep.2021")
+ septiembre<- cbind(septiembre,fechas)
+
+#añadimos el siguiente mes
+#octubre
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+ndvi <- list.files("NDVI_EVI/RC_NDVI/octubre/",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+oct1 <- mean(bd2$ndvi_20211008_a)
+oct2 <- mean(bd2$ndvi_20211016_t)
+oct3 <- mean(bd2$ndvi_20211024_a)
+#oct4 <- mean(bd2$ndvi_2009)
+
+octubre <- c(oct1,oct2,oct3)
+fechas <- rbind("oct.2021","oct.2021","oct.2021")
+octubre<- cbind(octubre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#noviembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/noviembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+nov1 <- mean(bd2$ndvi_20211101_t)
+nov2 <- mean(bd2$ndvi_20211109_a)
+nov3 <- mean(bd2$ndvi_20211117_t)
+nov4 <- mean(bd2$ndvi_20211125_a)
+
+noviembre <- c(nov1,nov2,nov3,nov4)
+fechas <- rbind("nov.2021","nov.2021","nov.2021","nov.2021")
+ noviembre<- cbind(noviembre,fechas)
+
+#añadimos el siguiente mes
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+#diciembre
+ndvi <- list.files("NDVI_EVI/RC_NDVI/diciembre//",pattern = "*.tif$",full.names = TRUE)
+ndvi <- stack(ndvi)
+
+#cargar puntos y extraer los valores del NDVI
+bd <- extract(ndvi, xy)
+bd2 <- as.data.frame(bd)
+bd2 = na.omit(bd2) #debemos omitir los NA para evitar sesgos
+
+dic1 <- mean(bd2$ndvi_20211203_t)
+dic2 <- mean(bd2$ndvi_20211211_a)
+dic3 <- mean(bd2$ndvi_20211219_t)
+dic4 <- mean(bd2$ndvi_20211227_a)
+
+diciembre <- c(dic1,dic2,dic3,dic4)
+fechas <- rbind("dic.2021","dic.2021","dic.2021","dic.2021")
+diciembre <- cbind(diciembre,fechas)
+
+#se unen todos los vectores
+todo <- rbind(enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre, noviembre, diciembre)
+head(todo)
+colnames(todo) <- c("ndvi","fechas")
+View(todo)
+
+getwd()
+write.csv(todo,"promedios2021.csv", row.names = F)
+
+
+##################  GRAFICACIOOOOOOOOOON ###############
+library(zoo)
+setwd("e:/Documents/PROYECTOS/L_SAVI/")
+todo <- read.csv("todo.csv")
+#la columna de fechas se convierte a formato yearmon
+todo$fechas <- as.yearmon(todo$fechas,"%b %Y") 
+class(todo$fechas)
+head(todo)
+
+x11()
+ggplot(todo)+geom_line(aes(fechas, ndvi, color=año)) #+
+  #geom_line(mapping = aes(x=fechas.1,y=ndvi), color="red")+
+  #geom_line(mapping = aes(x=fechas.2,ys=ndvi), color="green")+
+  #geom_line(mapping = aes(x=fechas.3,y=ndvi), color="blue")
+
+ggplot(todo, aes(x=as.Date(fecha), y=ndvi))+
+  geom_line(color="#00AF88", size=0.5)+ 
+  labs(x="FECHAS", y ="NDVI")+
+  ggtitle("Valores promedios de NDVI en la Región del Cabo durante 22 años")+
+  theme_minimal()
+
+
+
+
+
+###############  graAfico de caja y bigote por mes ##########
+############################   enero
+setwd("e:/Documents/PROYECTOS/L_SAVI/NDVI_EVI/promedios_mes/NDVI/")
+list.anual <- list.files("enero/",pattern = "*.tif$",full.names = TRUE)
+mes <- stack(list.anual)
+
+nombre <- c(2001,2001, 2002, 2002,2003,2003,2003,2003,2004, 2004, 2004, 2004,  2005, 2005,2005,2005,2006,2006,2006,2006,2007,2007, 2007,2007,2008,2008,2008, 2008,2009,2009, 2009,2009,2010,2010,2010, 2010,2011,2011, 2011, 2011,2012,2012,2012,2012, 2013,2013,2013,2013, 2014,2014,2014,2014,2015,2015,2015, 2015, 2016,2016,2016,2016,2017,2017,2017,2017,2018,2018,2018, 2018, 2019,2019,2019,2019,2020,2020,2020, 2020,2021,2021, 2021,2021,2022,2022,2022,2022)
+
+boxplot(mes)
+boxplot(mes, xaxt = "n", outline = F, main = "NDVI (enero)", ylab="NDVI")
+axis(1, at = 1:84, labels = nombre)
+
+############################   febrero
+list.anual <- list.files("febrero//",pattern = "*.tif$",full.names = TRUE)
+mes <- stack(list.anual)
+
+nombre <- c(2000, 2001,2001, 2002, 2002,2003,2003,2003,2003,2004, 2004, 2004, 2004,  2005, 2005,2005,2005,2006,2006,2006,2006,2007,2007, 2007,2007,2008,2008,2008, 2008,2009,2009, 2009,2009,2010,2010,2010, 2010,2011,2011, 2011, 2011,2012,2012,2012,2012, 2013,2013,2013,2013, 2014,2014,2014,2014,2015,2015,2015, 2015, 2016,2016,2016,2016,2017,2017,2017,2017,2018,2018,2018, 2018, 2019,2019,2019,2019,2020,2020,2020, 2020,2021,2021, 2021,2021,2022,2022,2022,2022)
+
+boxplot(mes)
+boxplot(mes, xaxt = "n", outline = F, main = "NDVI (febrero)", ylab="NDVI")
+axis(1, at = 1:85, labels = nombre)
+
+############################   marzo
+list.anual <- list.files("marzo/",pattern = "*.tif$",full.names = TRUE)
+mes <- stack(list.anual)
+
+nombre <- c(2000,2000, 2001,2001, 2002, 2002,2003,2003,2003,2003,2004, 2004, 2004, 2004, 2004, 2005, 2005,2005,2005,2006,2006,2006,2006,2007,2007, 2007,2008,2008,2008, 2008,2009,2009, 2009,2009,2010,2010,2010, 2010,2011,2011, 2011, 2011,2012,2012,2012,2012, 2013,2013,2013,2013, 2014,2014,2014,2014,2015,2015,2015, 2015, 2016,2016,2016,2016,2017,2017,2017,2017,2018,2018,2018, 2018, 2019,2019,2019,2019,2020,2020,2020, 2020,2021,2021, 2021,2021,2022,2022,2022,2022)
+
+boxplot(mes)
+boxplot(mes, xaxt = "n", outline = F, main = "NDVI (marzo)", ylab="NDVI")
+axis(1, at = 1:86, labels = nombre)
+
+####################### abril
+list.anual <- list.files("abril/",pattern = "*.tif$",full.names = TRUE)
+mes <- stack(list.anual)
+
+nlayers(mes)
+plot(mes,1)
+
+nombre <- c(2000,2000, 2001,2001, 2002, 2002,2003,2003,2003, 2003,2004, 2004, 2004,  2005,2005, 2005,2005,2006,2006,2006,2006,2007,2007,2007, 2007,2008,2008, 2008,2009,2009, 2009,2009,2010,2010,2010, 2010,2011,2011, 2011, 2011,2012,2012,2012, 2013,2013,2013,2013, 2014,2014,2014,2014,2015,2015, 2015,2015, 2016,2016,2016,2017,2017,2017,2017,2018,2018, 2018, 2018,2019,2019,2019,2019,2020,2020,2020,2021,2021, 2021,2022,2022,2022,2022)
+
+boxplot(mes)
+boxplot(mes, xaxt = "n", outline = F, main = "NDVI (abril)", ylab="NDVI")
+axis(1, at = 1:71, labels = nombre)
+
+
+############################   mayo
+list.anual <- list.files("mayo/",pattern = "*.tif$",full.names = TRUE)
+mes <- stack(list.anual)
+
+nombre <- c(2000,2000, 2001,2001, 2002, 2002,2003,2003,2003,2003,2004, 2004, 2004,  2005, 2005,2005,2005,2006,2006,2006,2006,2007,2007, 2007,2007,2008,2008, 2008,2009,2009, 2009,2009,2010,2010,2010, 2010,2011,2011, 2011, 2011,2012,2012,2012, 2013,2013,2013,2013, 2014,2014,2014,2014,2015,2015,2015, 2015, 2016,2016,2016,2017,2017,2017,2017,2018,2018,2018, 2018, 2019,2019,2019,2019,2020,2020,2020, 2021,2021, 2021,2022,2022,2022,2022)
+
+boxplot(mes)
+boxplot(mes, xaxt = "n", outline = F, main = "NDVI (mayo)", ylab="NDVI")
+axis(1, at = 1:80, labels = nombre)
+
+############################   junio
+list.anual <- list.files("junio/",pattern = "*.tif$",full.names = TRUE)
+mes <- stack(list.anual)
+
+nombre <- c(2000,2000, 2001,2001, 2002, 2002,2003,2003,2003,2003,2004, 2004, 2004, 2004, 2005, 2005,2005,2005,2006,2006,2006,2006,2007,2007, 2007,2007,2008,2008,2008, 2008,2009,2009, 2009,2009,2010,2010,2010, 2010,2011,2011, 2011, 2011,2012,2012,2012, 2012,2013,2013,2013,2013, 2014,2014,2014,2014,2015,2015,2015, 2015, 2016,2016,2016,2016,2017,2017,2017,2017,2018,2018,2018, 2018, 2019,2019,2019,2019,2020,2020,2020,2020, 2021,2021, 2021,2021,2022,2022,2022,2022)
+
+boxplot(mes)
+boxplot(mes, xaxt = "n", outline = F, main = "NDVI (junio)", ylab="NDVI")
+axis(1, at = 1:86, labels = nombre)
+
+
+############################   julio
+list.anual <- list.files("julio/",pattern = "*.tif$",full.names = TRUE)
+mes <- stack(list.anual)
+
+nombre <- c(2000,2000, 2001,2001, 2002, 2002,2003,2003,2003,2003,2004,2004, 2004, 2004,  2005, 2005,2005,2005,2006,2006,2006,2006,2007,2007, 2007,2007,2008,2008, 2008,2008,2009,2009, 2009,2009,2010,2010,2010, 2010,2011,2011, 2011, 2011,2012,2012,2012, 2012,2013,2013,2013,2013, 2014,2014,2014,2014,2015,2015,2015, 2015, 2016,2016,2016,2016,2017,2017,2017,2017,2018,2018,2018, 2018, 2019,2019,2019,2019,2020,2020,2020, 2020,2021,2021, 2021,2021,2022,2022,2022,2022)
+
+boxplot(mes)
+boxplot(mes, xaxt = "n", outline = F, main = "NDVI (julio)", ylab="NDVI")
+axis(1, at = 1:86, labels = nombre)
+
+
+############################   agosto
+list.anual <- list.files("agosto/",pattern = "*.tif$",full.names = TRUE)
+mes <- stack(list.anual)
+
+nombre <- c(2000,2000, 2001,2001, 2002, 2002,2002,2002,2003,2003,2003,2003,2004, 2004, 2004,  2004, 2005, 2005,2005,2005,2006,2006,2006,2006,2007,2007, 2007,2007,2008,2008, 2008,2008,2009,2009, 2009,2009,2010,2010,2010, 2010,2011,2011, 2011, 2011,2012,2012,2012, 2012, 2013,2013,2013,2013, 2014,2014,2014,2014,2015,2015,2015, 2015, 2016, 2016,2016,2016,2017,2017,2017,2017,2018,2018,2018, 2018, 2019,2019,2019,2019,2020,2020,2020, 2020, 2021,2021,2021, 2021,2022,2022,2022,2022)
+
+boxplot(mes)
+boxplot(mes, xaxt = "n", outline = F, main = "NDVI (agosto)", ylab="NDVI")
+axis(1, at = 1:88, labels = nombre)
+
+
+############################   septiembre
+list.anual <- list.files("septiembre/",pattern = "*.tif$",full.names = TRUE)
+mes <- stack(list.anual)
+
+nombre <- c(2000,2000, 2001,2001, 2002, 2002,2002,2002,2003,2003,2003,2003,2004, 2004, 2004, 2004, 2005, 2005,2005,2005,2006,2006,2006,2006,2007,2007, 2007,2007,2008,2008, 2008,2008,2009,2009, 2009,2009,2010,2010,2010, 2010,2011,2011, 2011, 2011,2012,2012,2012, 2012,2013,2013,2013,2013, 2014,2014,2014,2014,2015,2015,2015, 2015, 2016,2016,2016,2016,2017,2017,2017,2017,2018,2018,2018, 2018, 2019,2019,2019,2019,2020,2020,2020,2020,2021, 2021,2021, 2021)
+
+boxplot(mes)
+boxplot(mes, xaxt = "n", outline = F, main = "NDVI (septiembre)", ylab="NDVI")
+axis(1, at = 1:84, labels = nombre)
+
+
+############################   octubre
+list.anual <- list.files("octubre/",pattern = "*.tif$",full.names = TRUE)
+mes <- stack(list.anual)
+
+nombre <- c(2000,2000, 2001, 2002, 2002,2002,2003,2003,2003,2004,2004, 2004, 2004,  2005, 2005,2005,2006,2006,2006,2007, 2007,2007,2008,2008, 2008,2008,2009, 2009,2009,2010,2010,2010, 2011, 2011, 2011,2012,2012,2012, 2012,2013,2013,2013, 2014,2014,2014,2015,2015, 2015, 2016,2016,2016,2016,2017,2017,2017,2018,2018,2018, 2019,2019,2019,2020,2020,2020,2020, 2021,2021, 2021)
+
+
+boxplot(mes)
+boxplot(mes, xaxt = "n", outline = F, main = "NDVI (octubre)", ylab="NDVI")
+axis(1, at = 1:69, labels = nombre)
+
+############################   noviembre
+list.anual <- list.files("noviembre/",pattern = "*.tif$",full.names = TRUE)
+mes <- stack(list.anual)
+
+nombre <- c(2000, 2001,2001, 2002, 2002,2002,2002,2003,2003,2003,2003,2004, 2004, 2004,  2005, 2005,2005,2005,2006,2006,2006,2006,2007,2007, 2007,2007,2008,2008, 2008,2009,2009, 2009,2009,2010,2010,2010, 2010,2011,2011, 2011, 2011,2012,2012,2012, 2013,2013,2013,2013, 2014,2014,2014,2014,2015,2015,2015, 2015, 2016,2016,2016,2017,2017,2017,2017,2018,2018,2018, 2018, 2019,2019,2019,2019,2020,2020,2020, 2021,2021, 2021,2021)
+
+boxplot(mes)
+boxplot(mes, xaxt = "n", outline = F, main = "NDVI (noviembre)", ylab="NDVI")
+axis(1, at = 1:78, labels = nombre)
+
+
+
+############################   diciembre
+list.anual <- list.files("diciembre/",pattern = "*.tif$",full.names = TRUE)
+mes <- stack(list.anual)
+
+nombre <- c(2000,2000, 2001,2001, 2002, 2002,2002, 2002,2003,2003,2003,2003,2004, 2004, 2004,  2004,2005, 2005,2005,2005,2006,2006,2006,2006,2007,2007, 2007,2007,2008,2008,2008, 2008,2009,2009, 2009,2009,2010,2010,2010, 2010,2011,2011, 2011, 2011,2012,2012,2012,2012, 2013,2013,2013,2013, 2014,2014,2014,2014,2015,2015,2015, 2015, 2016,2016,2016,2016,2017,2017,2017,2017,2018,2018,2018, 2018, 2019,2019,2019,2019,2020,2020,2020,2020,2021, 2021,2021, 2021)
+
+boxplot(mes)
+boxplot(mes, xaxt = "n", outline = F, main = "NDVI (diciembre)", ylab="NDVI")
+axis(1, at = 1:84, labels = nombre)
