@@ -1,0 +1,184 @@
+
+##analizando el NDVI
+#install.packages("Kendall")
+
+library(raster)
+library(rgdal)
+library(Kendall)
+
+#### NDVI ANUAL ####
+setwd("E:/Documents/PROYECTOS/L_SAVI/NDVI_EVI/promedio_anual/NDVI/")
+list.files()
+lista_imagenes = list.files(pattern = "*.tif", full.names = TRUE)
+ndvi = brick(stack(lista_imagenes))
+plot(ndvi, 1)
+#writeRaster(ndvi, filename = "ndviP1.tiff", format="GTiff", overwrite = TRUE)
+
+#calculamos la serie temporal de todos los pixeles. Evalua si sigue una tendencia descendente o ascendente
+#La funcion MannKendall cuantifica cada uno de los pixeles de la zona de estudio
+
+fun_k = function(x){return(unlist(MannKendall(x)))}
+kendall_result = calc(ndvi, fun_k)
+plot(kendall_result$tau)
+ndvi <- kendall_result$tau
+
+#exportar los resultados
+#la banda tau contiene los valores de la tendencia
+setwd("E:/Documents/PROYECTOS/L_SAVI/RESULTADOS/NDVI/")
+writeRaster(kendall_result$tau, filename = "tendKendall_anual.tiff", format="GTiff", overwrite = TRUE)
+
+#area de estudio
+setwd("E:/Documents/PROYECTOS/L_SAVI/SAVI/")
+cabo = readOGR("Region_Cabo_wgs.shp")
+plot(cabo)
+
+crop <- crop(ndvi, cabo)
+mask <- mask(crop, cabo)
+plot(mask)
+
+#Histograma de frecuencias
+X11()
+hist(mask)
+hist(mask,  xlab = "Value",  main = " ")
+
+#Reclasificar para apreciar mejor las tendencias, para crear solo tres clases
+#-1, -0.25, -1, valores entre -1 a -0.25 se le asignara un 1
+#-0.25, 0.5, 0, valores entre -0.25 a 0.5 se le asignara un 0
+#0.5, 1, 1, valores entre 0.5 a 1 se le asignara un 1
+
+m = c(-1, -0.25, -1, -0.25, 0.5, 0, 0.5, 1, 1)
+#convertir los numeros en una matriz
+rclmat = matrix(m, ncol = 3, byrow = T)
+#reclasificar el raster tau
+rc_tou = reclassify(kendall_result$tau, rclmat)
+plot(rc_tou)
+writeRaster(rc_tou, filename = "reclasific_tau.tiff", format="GTiff", overwrite = TRUE)
+
+### EVI ANUAL #####
+setwd("E:/Documents/PROYECTOS/L_SAVI/NDVI_EVI/promedio_anual/EVI/")
+list.files()
+lista_imagenes = list.files(pattern = "*.tif", full.names = TRUE)
+ndvi = brick(stack(lista_imagenes))
+plot(ndvi, 1)
+#writeRaster(ndvi, filename = "ndviP1.tiff", format="GTiff", overwrite = TRUE)
+
+fun_k = function(x){return(unlist(MannKendall(x)))}
+kendall_result = calc(ndvi, fun_k)
+plot(kendall_result$tau)
+evi <- kendall_result$tau
+
+crop <- crop(evi, cabo)
+mask <- mask(crop, cabo)
+plot(mask)
+
+#exportar los resultados
+#la banda tau contiene los valores de la tendencia
+setwd("E:/Documents/PROYECTOS/L_SAVI/RESULTADOS/EVI/")
+writeRaster(mask, filename = "tendKendall_anual.tiff", format="GTiff", overwrite = TRUE)
+
+#Histograma de frecuencias
+X11()
+hist(mask)
+hist(mask,  xlab = "Value",  main = " ")
+
+#### NDVI SECAS ####
+setwd("E:/Documents/PROYECTOS/L_SAVI/NDVI_EVI/promedio_secas//NDVI/")
+list.files()
+lista_imagenes = list.files(pattern = "*.tif", full.names = TRUE)
+ndvi = brick(stack(lista_imagenes))
+fun_k = function(x){return(unlist(MannKendall(x)))}
+kendall_result = calc(ndvi, fun_k)
+#plot(kendall_result$tau)
+ndvi <- kendall_result$tau
+
+crop <- crop(ndvi, cabo)
+mask <- mask(crop, cabo)
+plot(mask)
+
+#exportar los resultados
+#la banda tau contiene los valores de la tendencia
+setwd("E:/Documents/PROYECTOS/L_SAVI/RESULTADOS/NDVI/")
+writeRaster(mask, filename = "tendKendall_secas.tiff", format="GTiff", overwrite = TRUE)
+
+#Histograma de frecuencias
+X11()
+hist(mask)
+hist(mask,  xlab = "Value",  main = " ")
+
+
+### EVI ANUAL #####
+setwd("E:/Documents/PROYECTOS/L_SAVI/NDVI_EVI/promedio_secas//EVI/")
+list.files()
+lista_imagenes = list.files(pattern = "*.tif", full.names = TRUE)
+evi = brick(stack(lista_imagenes))
+
+fun_k = function(x){return(unlist(MannKendall(x)))}
+kendall_result = calc(evi, fun_k)
+#plot(kendall_result$tau)
+
+evi <- kendall_result$tau
+
+crop <- crop(evi, cabo)
+mask <- mask(crop, cabo)
+plot(mask)
+
+#exportar los resultados
+#la banda tau contiene los valores de la tendencia
+setwd("E:/Documents/PROYECTOS/L_SAVI/RESULTADOS/EVI/")
+writeRaster(mask, filename = "tendKendall_secas.tiff", format="GTiff", overwrite = TRUE)
+
+#Histograma de frecuencias
+X11()
+hist(mask)
+hist(mask,  xlab = "Value",  main = " ")
+
+#### NDVI LLUVIAS ####
+setwd("E:/Documents/PROYECTOS/L_SAVI/NDVI_EVI/promedio_lluvias//NDVI/")
+list.files()
+lista_imagenes = list.files(pattern = "*.tif", full.names = TRUE)
+ndvi = brick(stack(lista_imagenes))
+
+fun_k = function(x){return(unlist(MannKendall(x)))}
+kendall_result = calc(ndvi, fun_k)
+#plot(kendall_result$tau)
+ndvi <- kendall_result$tau
+
+crop <- crop(ndvi, cabo)
+mask <- mask(crop, cabo)
+plot(mask)
+
+#exportar los resultados
+#la banda tau contiene los valores de la tendencia
+setwd("E:/Documents/PROYECTOS/L_SAVI/RESULTADOS/NDVI/")
+writeRaster(mask, filename = "tendKendall_lluvias.tiff", format="GTiff", overwrite = TRUE)
+
+#Histograma de frecuencias
+X11()
+hist(mask)
+hist(mask,  xlab = "Value",  main = " ")
+
+
+### EVI LLUVIAS #####
+setwd("E:/Documents/PROYECTOS/L_SAVI/NDVI_EVI/promedio_lluvias//EVI/")
+list.files()
+lista_imagenes = list.files(pattern = "*.tif", full.names = TRUE)
+evi = brick(stack(lista_imagenes))
+
+fun_k = function(x){return(unlist(MannKendall(x)))}
+kendall_result = calc(evi, fun_k)
+#plot(kendall_result$tau)
+
+evi <- kendall_result$tau
+crop <- crop(evi, cabo)
+mask <- mask(crop, cabo)
+plot(mask)
+
+#exportar los resultados
+#la banda tau contiene los valores de la tendencia
+setwd("E:/Documents/PROYECTOS/L_SAVI/RESULTADOS/EVI/")
+writeRaster(mask, filename = "tendKendall_lluvias.tiff", format="GTiff", overwrite = TRUE)
+
+#Histograma de frecuencias
+X11()
+hist(mask)
+hist(mask,  xlab = "Value",  main = " ")
